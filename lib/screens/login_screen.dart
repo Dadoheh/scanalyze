@@ -4,6 +4,8 @@ import 'package:http/http.dart' as http;
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../env/env.dart';
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -24,7 +26,7 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => isLoading = true);
 
     try {
-      final url = Uri.parse('http://<twoj-backend-ip>:8000/login');
+      final url = Uri.parse(Env.loginUrl);
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},

@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:fluttertoast/fluttertoast.dart';
 
+import '../env/env.dart';
+
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
 
@@ -23,7 +25,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     setState(() => isLoading = true);
 
     try {
-      final url = Uri.parse('http://<twoj-backend-ip>:8000/register');
+      final url = Uri.parse(Env.registerUrl);
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
