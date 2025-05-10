@@ -41,8 +41,11 @@ class _LoginScreenState extends State<LoginScreen> {
         await prefs.setString('auth_token', token);
 
         Fluttertoast.showToast(msg: 'Zalogowano pomyślnie!');
+        Navigator.of(context).pushReplacementNamed('/home');
       } else {
-        Fluttertoast.showToast(msg: 'Błąd logowania: ${response.body}');
+        final errorData = jsonDecode(utf8.decode(response.bodyBytes));
+        final errorMessage = errorData['detail'] ?? 'Nieznany błąd';
+        Fluttertoast.showToast(msg: 'Błąd logowania: $errorMessage');
       }
     } catch (e) {
       Fluttertoast.showToast(msg: 'Błąd połączenia z API');
@@ -50,6 +53,8 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() => isLoading = false);
     }
   }
+
+
 
   @override
   Widget build(BuildContext context) {

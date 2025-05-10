@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:fluttertoast/fluttertoast.dart';
-
+import 'dart:convert' show utf8;
 import '../env/env.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -34,9 +34,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
       if (response.statusCode == 200) {
         Fluttertoast.showToast(msg: 'Zarejestrowano pomyślnie!');
-        Navigator.pop(context); // wróć do logowania
+        Navigator.pop(context);
       } else {
-        Fluttertoast.showToast(msg: 'Błąd rejestracji: ${response.body}');
+        final errorData = jsonDecode(utf8.decode(response.bodyBytes));
+        final errorMessage = errorData['detail'] ?? 'Nieznany błąd';
+        Fluttertoast.showToast(msg: 'Błąd rejestracji: $errorMessage');
       }
     } catch (e) {
       Fluttertoast.showToast(msg: 'Błąd połączenia z API');
