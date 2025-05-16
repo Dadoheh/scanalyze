@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:scanalyze/screens/home_screen.dart';
+import 'package:scanalyze/screens/profile_screen.dart';
+import 'package:scanalyze/screens/profile_form_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/login_screen.dart';
 import 'screens/register_screen.dart';
@@ -22,6 +24,8 @@ class ScanalyzeApp extends StatelessWidget {
         '/': (context) => const LoginScreen(),
         '/register': (context) => const RegisterScreen(),
         '/home': (context) => const AuthGuard(child: HomeScreen()),
+        '/profile': (context) => const AuthGuard(child: ProfileScreen()),
+        '/profile-form': (context) => const AuthGuard(child: ProfileFormScreen()),
       },
     );
   }

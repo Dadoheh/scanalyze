@@ -39,6 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('auth_token', token);
+        await prefs.setString('user_email', email);
 
         Fluttertoast.showToast(msg: 'Zalogowano pomyślnie!');
         Navigator.of(context).pushReplacementNamed('/home');
