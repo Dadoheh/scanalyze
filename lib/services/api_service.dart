@@ -5,7 +5,7 @@ import '../env/env.dart';
 import '../models/user_profile.dart';
 
 class ApiService {
-  static Future<Map<String, dynamic>> getUserProfile() async {
+  static Future<UserProfile> getUserProfile() async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('auth_token');
 
@@ -18,7 +18,9 @@ class ApiService {
     );
 
     if (response.statusCode == 200) {
-      return jsonDecode(utf8.decode(response.bodyBytes));
+      //return jsonDecode(utf8.decode(response.bodyBytes));
+      final profileData = jsonDecode(utf8.decode(response.bodyBytes));
+      return UserProfile.fromJson(profileData);
     } else {
       throw Exception('Nie udało się pobrać profilu');
     }

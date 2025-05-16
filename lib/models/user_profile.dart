@@ -25,8 +25,8 @@ class UserProfile {
   final bool? rosacea; //trądzik różowaty
 
   //medications
-  final bool? photosensitizingDrugs; //leki fotouczulające
-  final bool? diuretics; //leki moczopędne
+  final bool? photosensitizingDrugs; //leki fotouczulające  // raczej jako lista
+  final bool? diuretics; //leki moczopędne   // raczej jako lista/String
   final String? otherMedications; //inne leki
   final String? medicalProcedures; //inne zabiegi
 
@@ -34,6 +34,7 @@ class UserProfile {
   final bool? smoking;
   final String? stressLevel;
   final bool? tanning; //nadmierne opalanie
+  final bool? pregnancy;
 
 
   UserProfile({
@@ -59,6 +60,7 @@ class UserProfile {
     this.smoking,
     this.stressLevel,
     this.tanning,
+    this.pregnancy
   });
 
   Map<String, dynamic> toJson() => {
@@ -84,31 +86,37 @@ class UserProfile {
     'smoking': smoking,
     'stressLevel': stressLevel,
     'tanning': tanning,
+    'pregnancy': pregnancy,
   };
 
-  factory UserProfile.fromJson(Map<String, dynamic> json) => UserProfile(
-    age: json['age'],
-    gender: json['gender'],
-    weight: json['weight']?.toDouble(),
-    height: json['height']?.toDouble(),
-    skinType: json['skinType'],
-    sensitiveSkin: json['sensitiveSkin'],
-    atopicSkin: json['atopicSkin'],
-    acneProne: json['acneProne'],
-    hasAllergies: json['hasAllergies'],
-    cosmeticAllergies: List<String>.from(json['cosmeticAllergies'] ?? []),
-    generalAllergies: List<String>.from(json['generalAllergies'] ?? []),
-    acneVulgaris: json['acneVulgaris'],
-    psoriasis: json['psoriasis'],
-    eczema: json['eczema'],
-    rosacea: json['rosacea'],
-    photosensitizingDrugs: json['photosensitizingDrugs'],
-    diuretics: json['diuretics'],
-    otherMedications: json['otherMedications'],
-    medicalProcedures: json['medicalProcedures'],
-    smoking: json['smoking'],
-    stressLevel: json['stressLevel'],
-    tanning: json['tanning'],
-  );
+  factory UserProfile.fromJson(Map<String, dynamic> json) {
+    return UserProfile(
+      age: json['age'],
+      gender: json['gender'],
+      weight: json['weight']?.toDouble(),
+      height: json['height']?.toDouble(),
+      skinType: json['skinType'],
+      sensitiveSkin: json['sensitiveSkin'],
+      atopicSkin: json['atopicSkin'],
+      acneProne: json['acneProne'],
+      hasAllergies: json['hasAllergies'],
+      cosmeticAllergies: json['cosmeticAllergies'] != null ?
+      List<String>.from(json['cosmeticAllergies']) : null,
+      generalAllergies: json['generalAllergies'] != null ?
+      List<String>.from(json['generalAllergies']) : null,
+      acneVulgaris: json['acneVulgaris'],
+      psoriasis: json['psoriasis'],
+      eczema: json['eczema'],
+      rosacea: json['rosacea'],
+      photosensitizingDrugs: json['photosensitizingDrugs'],
+      diuretics: json['diuretics'],
+      otherMedications: json['otherMedications'],
+      medicalProcedures: json['medicalProcedures'],
+      smoking: json['smoking'],
+      stressLevel: json['stressLevel'],
+      tanning: json['tanning'],
+      pregnancy: json['pregnancy'],
+    );
+  }
 
 }

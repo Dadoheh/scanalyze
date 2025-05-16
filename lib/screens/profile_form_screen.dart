@@ -13,7 +13,7 @@ class ProfileFormScreen extends StatefulWidget {
 
 class _ProfileFormScreenState extends State<ProfileFormScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _pageController = PageController();
+  late var _pageController = PageController();
   int _currentPageIndex = 0;
   bool _isLoading = false;
 
@@ -44,6 +44,11 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
   bool? _smoking;
   String? _stressLevel;
   bool? _tanning;
+  bool? _pregnancy;
+
+  late TextEditingController _ageController;
+  late TextEditingController _weightController;
+  late TextEditingController _heightController;
 
   final List<String> _pageTitles = [
     'Cechy fizjologiczne',
@@ -52,8 +57,31 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
     'Schorzenia dermatologiczne',
     'Stosowane leki',
     'Inne leki i zabiegi',
-    'Styl życia i nawyki'
+    'Styl życia, nawyki, inne'
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
+
+    _age = 25;
+    _weight = 70.0;
+    _height = 170.0;
+
+    _ageController = TextEditingController(text: '${_age}');
+    _weightController = TextEditingController(text: '${_weight}');
+    _heightController = TextEditingController(text: '${_height}');
+  }
+
+  @override
+  void dispose() {
+    _ageController.dispose();
+    _weightController.dispose();
+    _heightController.dispose();
+    _pageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -195,6 +223,10 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
 
       await ApiService.updateUserProfile(profile);
 
+      print('===== ZAPISANE DANE FORMULARZA =====');
+      print(profile.toJson());
+      print('===================================');
+
       Fluttertoast.showToast(msg: 'Dane zostały zapisane pomyślnie!');
       Navigator.pop(context);
     } catch (e) {
@@ -216,21 +248,49 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
         children: [
           const Text('* Pola wymagane', style: TextStyle(color: Colors.red)),
           const SizedBox(height: 16),
-          TextFormField(
-            decoration: const InputDecoration(
-              labelText: 'Wiek *',
-              hintText: 'Podaj swój wiek',
-            ),
-            keyboardType: TextInputType.number,
-            onChanged: (value) {
-              if (value.isNotEmpty) {
-                setState(() {
-                  _age = int.tryParse(value);
-                });
-              }
-            },
-            initialValue: _age?.toString(),
+
+          const Text('Wiek *'),
+          Row(
+            children: [
+              Expanded(
+                flex: 3,
+                child: Slider(
+                  value: _age?.toDouble() ?? 25.0,
+                  min: 1.0,
+                  max: 120.0,
+                  divisions: 119,
+                  label: '${_age ?? 25} lat',
+                  onChanged: (value) {
+                    setState(() {
+                      _age = value.round();
+                      _ageController.text = '${_age}';
+                    });
+                  },
+                ),
+              ),
+              Expanded(
+                flex: 1,
+                child: TextField(
+                  controller: _ageController,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(
+                    suffix: Text('lat'),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 8),
+                    border: OutlineInputBorder(),
+                  ),
+                  onChanged: (value) {
+                    final parsedValue = int.tryParse(value);
+                    if (parsedValue != null && parsedValue >= 1 && parsedValue <= 120) {
+                      setState(() {
+                        _age = parsedValue;
+                      });
+                    }
+                  },
+                ),
+              ),
+            ],
           ),
+
           const SizedBox(height: 16),
           const Text('Płeć *'),
           Row(
@@ -251,53 +311,100 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
                 onChanged: (value) {
                   setState(() {
                     _gender = value;
+                    if (value == 'Mężczyzna') {
+                      _pregnancy = false;
+                    }
                   });
                 },
               ),
               const Text('Mężczyzna'),
-              Radio<String>(
-                value: 'Inne',
-                groupValue: _gender,
-                onChanged: (value) {
-                  setState(() {
-                    _gender = value;
-                  });
-                },
-              ),
-              const Text('Inne'),
             ],
           ),
+
           const SizedBox(height: 16),
-          TextFormField(
-            decoration: const InputDecoration(
-              labelText: 'Masa ciała (kg) *',
-              hintText: 'Podaj masę ciała w kg',
-            ),
-            keyboardType: TextInputType.number,
-            onChanged: (value) {
-              if (value.isNotEmpty) {
-                setState(() {
-                  _weight = double.tryParse(value);
-                });
-              }
-            },
-            initialValue: _weight?.toString(),
+          const Text('Masa ciała *'),
+          Row(
+            children: [
+              Expanded(
+                flex: 3,
+                child: Slider(
+                  value: _weight ?? 70.0,
+                  min: 30.0,
+                  max: 200.0,
+                  divisions: 170,
+                  label: '${_weight?.toStringAsFixed(1) ?? "70.0"} kg',
+                  onChanged: (value) {
+                    setState(() {
+                      _weight = double.parse(value.toStringAsFixed(1));
+                      _weightController.text = '${_weight?.toStringAsFixed(1)}';
+                    });
+                  },
+                ),
+              ),
+              Expanded(
+                flex: 1,
+                child: TextField(
+                  controller: _weightController,
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  decoration: const InputDecoration(
+                    suffix: Text('kg'),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 8),
+                    border: OutlineInputBorder(),
+                  ),
+                  onChanged: (value) {
+                    final parsedValue = double.tryParse(value);
+                    if (parsedValue != null && parsedValue >= 30 && parsedValue <= 200) {
+                      setState(() {
+                        _weight = parsedValue;
+                      });
+                    }
+                  },
+                ),
+              ),
+            ],
           ),
+
           const SizedBox(height: 16),
-          TextFormField(
-            decoration: const InputDecoration(
-              labelText: 'Wzrost (cm) *',
-              hintText: 'Podaj wzrost w cm',
-            ),
-            keyboardType: TextInputType.number,
-            onChanged: (value) {
-              if (value.isNotEmpty) {
-                setState(() {
-                  _height = double.tryParse(value);
-                });
-              }
-            },
-            initialValue: _height?.toString(),
+          const Text('Wzrost *'),
+          Row(
+            children: [
+              Expanded(
+                flex: 3,
+                child: Slider(
+                  value: _height ?? 170.0,
+                  min: 100.0,
+                  max: 220.0,
+                  divisions: 120,
+                  label: '${_height?.round() ?? 170} cm',
+                  onChanged: (value) {
+                    setState(() {
+                      _height = value.round().toDouble();
+                      _heightController.text = '${_height?.round()}';
+                    });
+                  },
+                ),
+              ),
+              Expanded(
+                flex: 1,
+                child: TextField(
+                  controller: _heightController,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(
+                    suffix: Text('cm'),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 8),
+                    border: OutlineInputBorder(),
+                  ),
+                  onChanged: (value) {
+                    final parsedValue = int.tryParse(value);
+                    if (parsedValue != null && parsedValue >= 100 && parsedValue <= 220) {
+                      setState(() {
+                        _height = parsedValue.toDouble();
+                      });
+                    }
+                  },
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -367,67 +474,65 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const Padding(
+            padding: EdgeInsets.only(left: 16.0, bottom: 8.0, top: 8.0),
+            child: Text(
+              'Alergie na składniki kosmetyków',  //TODO - Enhance allergies to list box
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+          ),
+
           CheckboxListTile(
-            title: const Text('Alergie na składniki kosmetyków'),
-            value: _hasAllergies ?? false,
+            title: const Text('Substancje zapachowe'),
+            value: _cosmeticAllergies.contains('Substancje zapachowe'),
             onChanged: (value) {
               setState(() {
-                _hasAllergies = value;
+                if (value == true) {
+                  _cosmeticAllergies.add('Substancje zapachowe');
+                } else {
+                  _cosmeticAllergies.remove('Substancje zapachowe');
+                }
               });
             },
+            dense: true,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
           ),
-          if (_hasAllergies == true) ...[
-            const SizedBox(height: 8),
-            const Text('Wybierz rodzaje alergii kosmetycznych:'),
-            CheckboxListTile(
-              title: const Text('Substancje zapachowe'),
-              value: _cosmeticAllergies.contains('Substancje zapachowe'),
-              onChanged: (value) {
-                setState(() {
-                  if (value == true) {
-                    _cosmeticAllergies.add('Substancje zapachowe');
-                  } else {
-                    _cosmeticAllergies.remove('Substancje zapachowe');
-                  }
-                });
-              },
-              dense: true,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
-            ),
-            CheckboxListTile(
-              title: const Text('Konserwanty'),
-              value: _cosmeticAllergies.contains('Konserwanty'),
-              onChanged: (value) {
-                setState(() {
-                  if (value == true) {
-                    _cosmeticAllergies.add('Konserwanty');
-                  } else {
-                    _cosmeticAllergies.remove('Konserwanty');
-                  }
-                });
-              },
-              dense: true,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
-            ),
-            CheckboxListTile(
-              title: const Text('Barwniki'),
-              value: _cosmeticAllergies.contains('Barwniki'),
-              onChanged: (value) {
-                setState(() {
-                  if (value == true) {
-                    _cosmeticAllergies.add('Barwniki');
-                  } else {
-                    _cosmeticAllergies.remove('Barwniki');
-                  }
-                });
-              },
-              dense: true,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
-            ),
-            const SizedBox(height: 8),
-            TextFormField(
+          CheckboxListTile(
+            title: const Text('Konserwanty'),
+            value: _cosmeticAllergies.contains('Konserwanty'),
+            onChanged: (value) {
+              setState(() {
+                if (value == true) {
+                  _cosmeticAllergies.add('Konserwanty');
+                } else {
+                  _cosmeticAllergies.remove('Konserwanty');
+                }
+              });
+            },
+            dense: true,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
+          ),
+          CheckboxListTile(
+            title: const Text('Barwniki'),
+            value: _cosmeticAllergies.contains('Barwniki'),
+            onChanged: (value) {
+              setState(() {
+                if (value == true) {
+                  _cosmeticAllergies.add('Barwniki');
+                } else {
+                  _cosmeticAllergies.remove('Barwniki');
+                }
+              });
+            },
+            dense: true,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
+          ),
+          const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: TextFormField(
               decoration: const InputDecoration(
-                labelText: 'Inne alergie kosmetyczne (oddziel przecinkiem)',
+                labelText: 'Inne alergie (oddziel przecinkiem)',
                 hintText: 'Np. nikiel, lateks, aloes',
               ),
               onChanged: (value) {
@@ -443,7 +548,7 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
                 }
               },
             ),
-          ],
+          ),
         ],
       ),
     );
@@ -626,6 +731,21 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
                 _tanning = value;
               });
             },
+          ),
+          const SizedBox(height: 24),
+          const Divider(),
+          const SizedBox(height: 8),
+          CheckboxListTile(
+            title: const Text('Ciąża'),
+            subtitle: const Text('Zaznacz, jeśli jesteś w ciąży lub planujesz ciążę'),
+            value: _pregnancy ?? false,
+            onChanged: _gender == 'Mężczyzna' ? null : (value) {
+              setState(() {
+                _pregnancy = value;
+              });
+            },
+            // Pole jest wyszarzone dla mężczyzn
+            enabled: _gender != 'Mężczyzna',
           ),
         ],
       ),
