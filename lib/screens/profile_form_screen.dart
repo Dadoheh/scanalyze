@@ -223,6 +223,7 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
         smoking: _smoking,
         stressLevel: _stressLevel,
         tanning: _tanning,
+        pregnancy: _pregnancy,
       );
 
       await ApiService.updateUserProfile(profile);
@@ -305,6 +306,9 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
                 onChanged: (value) {
                   setState(() {
                     _gender = value;
+                    if (value == 'Kobieta') {
+                      _pregnancy = false;
+                    }
                   });
                 },
               ),
