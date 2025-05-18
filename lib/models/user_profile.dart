@@ -31,9 +31,9 @@ class UserProfile {
   final String? medicalProcedures; //inne zabiegi
 
   //lifestyle
-  final bool? smoking;
-  final String? stressLevel;
-  final bool? tanning; //nadmierne opalanie
+  final String? smoking; // 6 stages
+  final int? stressLevel; // 0-10
+  final String? tanning; //nadmierne opalanie - 6 stages
   final bool? pregnancy;
 
 

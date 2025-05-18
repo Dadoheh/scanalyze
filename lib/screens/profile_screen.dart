@@ -134,9 +134,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ]),
 
           _buildInfoSection('Styl życia', [
-            _buildInfoItem('Palenie tytoniu', _profile!.smoking == true ? 'Tak' : 'Nie'),
-            _buildInfoItem('Poziom stresu', _profile!.stressLevel ?? 'Nie określono'),
-            _buildInfoItem('Częste opalanie', _profile!.tanning == true ? 'Tak' : 'Nie'),
+            _buildInfoItem('Palenie tytoniu', _profile!.smoking ?? 'Nie określono'),
+            _buildInfoItem('Poziom stresu', _profile!.stressLevel != null ? '${_profile!.stressLevel}/10' : 'Nie określono'),
+            _buildInfoItem('Opalanie', _profile!.tanning ?? 'Nie określono'),
             if (_profile!.gender == 'Kobieta')
               _buildInfoItem('Ciąża', _profile!.pregnancy == true ? 'Tak' : 'Nie'),
           ]),

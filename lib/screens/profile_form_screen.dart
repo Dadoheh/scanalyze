@@ -41,9 +41,9 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
   String? _otherMedications;
   String? _medicalProcedures;
 
-  bool? _smoking;
-  String? _stressLevel;
-  bool? _tanning;
+  String? _smoking;
+  int? _stressLevel;
+  String? _tanning;
   bool? _pregnancy;
 
   late TextEditingController _ageController;
@@ -68,6 +68,10 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
     _age = 25;
     _weight = 70.0;
     _height = 170.0;
+    _smoking = 'Nigdy';
+    _tanning = 'Nigdy';
+    _stressLevel = 5;
+    _pregnancy = false;
 
     _ageController = TextEditingController(text: '${_age}');
     _weightController = TextEditingController(text: '${_weight}');
@@ -676,62 +680,48 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Styl życia:'),
-          CheckboxListTile(
-            title: const Text('Palenie tytoniu'),
-            value: _smoking ?? false,
-            onChanged: (value) {
-              setState(() {
-                _smoking = value;
-              });
-            },
-          ),
-          const SizedBox(height: 16),
-          const Text('Poziom stresu:'),
-          Row(
+          const Text('Palenie tytoniu:', style: TextStyle(fontWeight: FontWeight.bold)),
+          const SizedBox(height: 8),
+          Column(
             children: [
-              Radio<String>(
-                value: 'Niski',
-                groupValue: _stressLevel,
-                onChanged: (value) {
-                  setState(() {
-                    _stressLevel = value;
-                  });
-                },
-              ),
-              const Text('Niski'),
-              Radio<String>(
-                value: 'Średni',
-                groupValue: _stressLevel,
-                onChanged: (value) {
-                  setState(() {
-                    _stressLevel = value;
-                  });
-                },
-              ),
-              const Text('Średni'),
-              Radio<String>(
-                value: 'Wysoki',
-                groupValue: _stressLevel,
-                onChanged: (value) {
-                  setState(() {
-                    _stressLevel = value;
-                  });
-                },
-              ),
-              const Text('Wysoki'),
+              _buildRadioOption('Nigdy', 'Nigdy', _smoking, (value) => setState(() => _smoking = value)),
+              _buildRadioOption('Bardzo rzadko', 'Bardzo rzadko', _smoking, (value) => setState(() => _smoking = value)),
+              _buildRadioOption('Rzadko', 'Rzadko', _smoking, (value) => setState(() => _smoking = value)),
+              _buildRadioOption('Okazjonalnie', 'Okazjonalnie', _smoking, (value) => setState(() => _smoking = value)),
+              _buildRadioOption('Często', 'Często', _smoking, (value) => setState(() => _smoking = value)),
+              _buildRadioOption('Codziennie', 'Codziennie', _smoking, (value) => setState(() => _smoking = value)),
             ],
           ),
-          const SizedBox(height: 16),
-          CheckboxListTile(
-            title: const Text('Korzystanie z solarium/częste opalanie'),
-            value: _tanning ?? false,
+
+          const SizedBox(height: 20),
+          Text('Poziom stresu: ${_stressLevel ?? 5}/10', style: const TextStyle(fontWeight: FontWeight.bold)),
+          Slider(
+            value: _stressLevel?.toDouble() ?? 5.0,
+            min: 0,
+            max: 10,
+            divisions: 10,
+            label: '${_stressLevel ?? 5}',
             onChanged: (value) {
               setState(() {
-                _tanning = value;
+                _stressLevel = value.round();
               });
             },
           ),
+
+          const SizedBox(height: 20),
+          const Text('Intensywność opalania:', style: TextStyle(fontWeight: FontWeight.bold)),
+          const SizedBox(height: 8),
+          Column(
+            children: [
+              _buildRadioOption('Nigdy', 'Nigdy', _tanning, (value) => setState(() => _tanning = value)),
+              _buildRadioOption('Bardzo rzadko', 'Bardzo rzadko', _tanning, (value) => setState(() => _tanning = value)),
+              _buildRadioOption('Rzadko', 'Rzadko', _tanning, (value) => setState(() => _tanning = value)),
+              _buildRadioOption('Regularnie', 'Regularnie', _tanning, (value) => setState(() => _tanning = value)),
+              _buildRadioOption('Często', 'Często', _tanning, (value) => setState(() => _tanning = value)),
+              _buildRadioOption('Bardzo często / solarium', 'Bardzo często / solarium', _tanning, (value) => setState(() => _tanning = value)),
+            ],
+          ),
+
           const SizedBox(height: 24),
           const Divider(),
           const SizedBox(height: 8),
@@ -744,11 +734,23 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
                 _pregnancy = value;
               });
             },
-            // Pole jest wyszarzone dla mężczyzn
             enabled: _gender != 'Mężczyzna',
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildRadioOption(String title, String value, String? groupValue, Function(String?) onChanged) {
+    return ListTile(
+      title: Text(title),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 0),
+      leading: Radio<String>(
+        value: value,
+        groupValue: groupValue,
+        onChanged: onChanged,
+      ),
+      dense: true,
     );
   }
 }
