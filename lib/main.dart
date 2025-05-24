@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:scanalyze/screens/analysis_result_screen.dart';
 import 'package:scanalyze/screens/home_screen.dart';
+import 'package:scanalyze/screens/image_upload_screen.dart';
 import 'package:scanalyze/screens/profile_screen.dart';
 import 'package:scanalyze/screens/profile_form_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -23,9 +25,11 @@ class ScanalyzeApp extends StatelessWidget {
       routes: {
         '/': (context) => const LoginScreen(),
         '/register': (context) => const RegisterScreen(),
-        '/home': (context) => const AuthGuard(child: HomeScreen()),
-        '/profile': (context) => const AuthGuard(child: ProfileScreen()),
-        '/profile-form': (context) => const AuthGuard(child: ProfileFormScreen()),
+        '/home': (context) => const HomeScreen(),
+        '/profile': (context) => const ProfileScreen(),
+        '/profile-form': (context) => const ProfileFormScreen(),
+        '/image-upload': (context) => const ImageUploadScreen(),
+        '/analysis-result': (context) => const AnalysisResultScreen(),
       },
     );
   }
