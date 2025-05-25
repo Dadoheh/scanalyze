@@ -49,6 +49,7 @@ class ApiService {
     }
   }
 
+  // Probably to remove
   static Future<Map<String, dynamic>> uploadProductImage(dynamic imageData) async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('auth_token');
@@ -86,6 +87,48 @@ class ApiService {
         contentType: MediaType.parse(contentType),
       ));
     }
+
+    try {
+      final response = await request.send();
+      final responseData = await http.Response.fromStream(response);
+
+      if (response.statusCode == 200) {
+        return jsonDecode(utf8.decode(responseData.bodyBytes));
+      } else {
+        throw Exception('Nie udało się przesłać zdjęcia: ${responseData.body}');
+      }
+    } catch (e) {
+      throw Exception('Błąd podczas przesyłania: $e');
+    }
+  }
+
+  static Future<Map<String, dynamic>> uploadImageWithMetadata(
+      Uint8List imageBytes, {
+        required String fileName,
+        required String mimeType,
+      }) async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('auth_token');
+
+    if (token == null) {
+      throw Exception('Brak autentykacji');
+    }
+
+    var request = http.MultipartRequest(
+      'POST',
+      Uri.parse('${Env.apiBaseUrl}/product/analyze'),
+    );
+
+    request.headers.addAll({
+      'Authorization': 'Bearer $token',
+    });
+
+    request.files.add(http.MultipartFile.fromBytes(
+      'image',
+      imageBytes,
+      filename: fileName,
+      contentType: MediaType.parse(mimeType),
+    ));
 
     try {
       final response = await request.send();
