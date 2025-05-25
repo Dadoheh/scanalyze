@@ -33,25 +33,6 @@ class _ImageUploadScreenState extends State<ImageUploadScreen> {
     }
   }
 
-  // Mock API call for simulation
-  static Future<Map<String, dynamic>> uploadProductImage(Uint8List imageBytes) async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('auth_token');
-
-    await Future.delayed(Duration(seconds: 2));
-
-    return {
-      "ingredients": [
-        {"name": "Aqua", "description": "Woda", "risk_level": "low"},
-        {"name": "Glycerin", "description": "Nawilżający", "risk_level": "low"},
-        {"name": "Sodium Laureth Sulfate", "description": "Surfaktant", "risk_level": "medium"},
-        {"name": "Parfum", "description": "Substancja zapachowa", "risk_level": "high"}
-      ],
-      "compatibility_score": 0.75,
-      "recommendation": "Ten produkt jest odpowiedni dla Twojego typu skóry."
-    };
-  }
-
   Future<void> _uploadImage() async {
     if (_imageBytes == null) {
       Fluttertoast.showToast(msg: 'Proszę wybrać zdjęcie');
@@ -63,21 +44,8 @@ class _ImageUploadScreenState extends State<ImageUploadScreen> {
     });
 
     try {
-      // W rzeczywistości, byłoby to połączenie z API:
-      // final result = await ApiService.uploadProductImage(_imageBytes!);
 
-      // Tymczasowo symulujemy odpowiedź:
-      await Future.delayed(const Duration(seconds: 2));
-      final result = {
-        "ingredients": [
-          {"name": "Aqua", "description": "Woda", "risk_level": "low"},
-          {"name": "Glycerin", "description": "Nawilżający", "risk_level": "low"},
-          {"name": "Sodium Laureth Sulfate", "description": "Surfaktant", "risk_level": "medium"},
-          {"name": "Parfum", "description": "Substancja zapachowa", "risk_level": "high"}
-        ],
-        "compatibility_score": 0.75,
-        "recommendation": "Ten produkt jest odpowiedni dla Twojego typu skóry."
-      };
+      final result = await ApiService.uploadProductImage(_imageBytes!);
 
       Navigator.pushNamed(context, '/analysis-result', arguments: result);
     } catch (e) {
@@ -196,6 +164,4 @@ class _ImageUploadScreenState extends State<ImageUploadScreen> {
     );
   }
 }
-
-// Dodaj nową metodę do istniejącego pliku:
 
