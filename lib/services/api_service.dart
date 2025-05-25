@@ -1,8 +1,13 @@
 import 'dart:convert';
+import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../env/env.dart';
 import '../models/user_profile.dart';
+import 'dart:typed_data' as td;
+
 
 class ApiService {
   static Future<UserProfile> getUserProfile() async {
@@ -41,6 +46,58 @@ class ApiService {
 
     if (response.statusCode != 200) {
       throw Exception('Nie udało się zaktualizować profilu');
+    }
+  }
+
+  static Future<Map<String, dynamic>> uploadProductImage(dynamic imageData) async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('auth_token');
+
+    if (token == null) {
+      throw Exception('Brak autentykacji');
+    }
+
+    var request = http.MultipartRequest(
+      'POST',
+      Uri.parse('${Env.apiBaseUrl}/product/analyze'),
+    );
+
+    request.headers.addAll({
+      'Authorization': 'Bearer $token',
+    });
+
+    if (kIsWeb) {
+      // Dla web - imageData to Uint8List
+      request.files.add(http.MultipartFile.fromBytes(
+        'image',
+        imageData, // Web przekaże tutaj bajty
+        filename: 'image.jpg',
+        contentType: MediaType.parse('image/jpeg'),
+      ));
+    } else {
+      // Dla mobile - imageData to File z dart:io
+      final path = imageData.path;
+      final extension = path.toLowerCase().split('.').last;
+      final contentType = extension == 'png' ? 'image/png' : 'image/jpeg';
+
+      request.files.add(await http.MultipartFile.fromPath(
+        'image',
+        path,
+        contentType: MediaType.parse(contentType),
+      ));
+    }
+
+    try {
+      final response = await request.send();
+      final responseData = await http.Response.fromStream(response);
+
+      if (response.statusCode == 200) {
+        return jsonDecode(utf8.decode(responseData.bodyBytes));
+      } else {
+        throw Exception('Nie udało się przesłać zdjęcia: ${responseData.body}');
+      }
+    } catch (e) {
+      throw Exception('Błąd podczas przesyłania: $e');
     }
   }
 }
