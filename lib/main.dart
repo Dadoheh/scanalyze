@@ -7,6 +7,7 @@ import 'package:scanalyze/screens/profile_form_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/login_screen.dart';
 import 'screens/register_screen.dart';
+import 'screens/ocr_verification_screen.dart';
 
 void main() {
   runApp(const ScanalyzeApp());
@@ -29,6 +30,7 @@ class ScanalyzeApp extends StatelessWidget {
         '/profile': (context) => const ProfileScreen(),
         '/profile-form': (context) => const ProfileFormScreen(),
         '/image-upload': (context) => const ImageUploadScreen(),
+        '/ocr-verification': (context) => const OcrVerificationScreen(),
         '/analysis-result': (context) => const AnalysisResultScreen(),
       },
     );

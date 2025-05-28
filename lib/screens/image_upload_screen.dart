@@ -58,7 +58,7 @@ class _ImageUploadScreenState extends State<ImageUploadScreen> {
 
       if (croppedImage == null || croppedImage.isEmpty) {
         Fluttertoast.showToast(
-          msg: 'Problem z przycięciem obrazu. Spróbuj ponownie lub zmień powiększenie.',
+          msg: 'Problem z przygotowaniem obrazu. Spróbuj ponownie.',
           toastLength: Toast.LENGTH_LONG,
         );
         setState(() {
@@ -67,19 +67,27 @@ class _ImageUploadScreenState extends State<ImageUploadScreen> {
         return;
       }
 
-      final String mimeType = 'image/png';
-      final String fileName = 'cropped_image.png';
-
-      final result = await ApiService.uploadImageWithMetadata(
+      // Wywołaj endpoint extract-text
+      final result = await ApiService.extractText(
           croppedImage,
-          fileName: fileName,
-          mimeType: mimeType
+          fileName: 'cropped_image.png',
+          mimeType: 'image/png'
       );
 
-      Navigator.pushNamed(context, '/analysis-result', arguments: result);
+      // Przekaż przycięty obraz do ekranu weryfikacji OCR
+      Navigator.pushNamed(
+          context,
+          '/ocr-verification',
+          arguments: {
+            'raw_text': result['raw_text'],
+            'extracted_ingredients': result['extracted_ingredients'],
+            'file_id': result['file_id'],
+            'cropped_image': croppedImage, // Dodajemy przycięty obraz
+          }
+      );
     } catch (e) {
       print('Error uploading: $e');
-      Fluttertoast.showToast(msg: 'Błąd podczas przesyłania: ${e.toString()}');
+      Fluttertoast.showToast(msg: 'Błąd podczas wczytywania tekstu: ${e.toString()}');
     } finally {
       setState(() {
         _isUploading = false;
@@ -289,7 +297,7 @@ class _ImageUploadScreenState extends State<ImageUploadScreen> {
                     color: Colors.white,
                   ),
                 )
-                    : const Text('Analizuj produkt'),
+                    : const Text('Wczytaj tekst'),
               ),
             ),
           ],
