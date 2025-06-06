@@ -25,11 +25,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     setState(() => _isLoading = true);
 
     try {
-      // Pobierz email zalogowanego użytkownika
       final prefs = await SharedPreferences.getInstance();
       _userEmail = prefs.getString('user_email') ?? '';
 
-      // Pobierz profil z API
       final profile = await ApiService.getUserProfile();
       setState(() {
         _profile = profile as UserProfile?;

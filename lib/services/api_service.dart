@@ -68,15 +68,13 @@ class ApiService {
     });
 
     if (kIsWeb) {
-      // Dla web - imageData to Uint8List
       request.files.add(http.MultipartFile.fromBytes(
         'image',
-        imageData, // Web przekaże tutaj bajty
+        imageData,
         filename: 'image.jpg',
         contentType: MediaType.parse('image/jpeg'),
       ));
     } else {
-      // Dla mobile - imageData to File z dart:io
       final path = imageData.path;
       final extension = path.toLowerCase().split('.').last;
       final contentType = extension == 'png' ? 'image/png' : 'image/jpeg';

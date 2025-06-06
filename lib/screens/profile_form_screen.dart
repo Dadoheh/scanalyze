@@ -174,7 +174,6 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
   // Validation and next page logic
   void _validateAndContinue() {
     if (_currentPageIndex == 0) {
-      // Walidacja dla strony z cechami fizjologicznymi (wymagane)
       if (_age == null || _gender == null || _weight == null || _height == null) {
         Fluttertoast.showToast(msg: 'Wypełnij wszystkie wymagane pola');
         return;
