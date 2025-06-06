@@ -67,14 +67,12 @@ class _ImageUploadScreenState extends State<ImageUploadScreen> {
         return;
       }
 
-      // Wywołaj endpoint extract-text
       final result = await ApiService.extractText(
           croppedImage,
           fileName: 'cropped_image.png',
           mimeType: 'image/png'
       );
 
-      // Przekaż przycięty obraz do ekranu weryfikacji OCR
       Navigator.pushNamed(
           context,
           '/ocr-verification',
@@ -215,7 +213,6 @@ class _ImageUploadScreenState extends State<ImageUploadScreen> {
               ),
             const SizedBox(height: 8),
 
-            // Podgląd zdjęcia z przesuwaniem
             Expanded(
               child: _imageBytes == null
                   ? Container(
@@ -266,7 +263,6 @@ class _ImageUploadScreenState extends State<ImageUploadScreen> {
 
             const SizedBox(height: 20),
 
-            // Przycisk wyboru pliku (tylko galeria dla web)
             ElevatedButton.icon(
               onPressed: _isUploading ? null : _pickImage,
               icon: const Icon(Icons.photo_library),
@@ -280,7 +276,6 @@ class _ImageUploadScreenState extends State<ImageUploadScreen> {
 
             const SizedBox(height: 20),
 
-            // Przycisk przesyłania
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
