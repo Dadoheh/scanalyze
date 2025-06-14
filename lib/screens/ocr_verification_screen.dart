@@ -16,6 +16,7 @@ class _OcrVerificationScreenState extends State<OcrVerificationScreen> {
   bool _isAnalyzing = false;
   final TextEditingController _rawTextController = TextEditingController();
   List<String> _ingredients = [];
+  List<String> _ingredientIds = [];
   String _fileId = '';
   bool _isEditingText = false;
   Uint8List? _croppedImage;
@@ -31,6 +32,10 @@ class _OcrVerificationScreenState extends State<OcrVerificationScreen> {
       _ingredients = List<String>.from(args['extracted_ingredients'] ?? []);
       _fileId = args['file_id'] ?? '';
       _croppedImage = args['cropped_image'];
+      _ingredientIds = List.generate(
+          _ingredients.length,
+              (index) => 'ingredient_${DateTime.now().millisecondsSinceEpoch}_$index'
+      );
     }
   }
 
@@ -43,18 +48,23 @@ class _OcrVerificationScreenState extends State<OcrVerificationScreen> {
   void _addIngredient() {
     setState(() {
       _ingredients.add('');
+      _ingredientIds.add('ingredient_${DateTime.now().millisecondsSinceEpoch}_${_ingredients.length}');
     });
   }
 
   void _updateIngredient(int index, String value) {
     setState(() {
-      _ingredients[index] = value;
+      if (index >= 0 && index < _ingredients.length) {
+        _ingredients[index] = value;
+      }
     });
   }
 
   void _removeIngredient(int index) {
     setState(() {
+      // Usuń składnik i odpowiadające mu ID
       _ingredients.removeAt(index);
+      _ingredientIds.removeAt(index);
     });
   }
 
@@ -73,12 +83,17 @@ class _OcrVerificationScreenState extends State<OcrVerificationScreen> {
     });
 
     try {
-      final result = await ApiService.analyzeIngredients({
-        'confirmed_ingredients': confirmedIngredients,
-        'file_id': _fileId
-      });
+      final mappingResult = await ApiService.mapChemicalIdentities(confirmedIngredients);
 
-      Navigator.pushReplacementNamed(context, '/analysis-result', arguments: result);
+      Navigator.pushReplacementNamed(
+          context,
+          '/analysis-result',
+          arguments: {
+            'chemical_mapping': mappingResult,
+            'ingredients': confirmedIngredients,
+            'file_id': _fileId,
+          }
+      );
     } catch (e) {
       Fluttertoast.showToast(msg: 'Błąd podczas analizy: ${e.toString()}');
     } finally {
@@ -171,56 +186,61 @@ class _OcrVerificationScreenState extends State<OcrVerificationScreen> {
 
             Expanded(
               child: _ingredients.isEmpty
-                ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.format_list_bulleted, size: 48, color: Colors.grey),
-                        const SizedBox(height: 16),
-                        const Text(
-                          'Nie rozpoznano składników',
-                          style: TextStyle(fontSize: 16, color: Colors.grey),
-                        ),
-                        const SizedBox(height: 8),
-                        TextButton.icon(
-                          onPressed: _addIngredient,
-                          icon: const Icon(Icons.add),
-                          label: const Text('Dodaj ręcznie'),
-                        )
-                      ],
+                  ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.format_list_bulleted, size: 48, color: Colors.grey),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Nie rozpoznano składników',
+                      style: TextStyle(fontSize: 16, color: Colors.grey),
                     ),
-                  )
-                : ListView.builder(
-                    itemCount: _ingredients.length,
-                    itemBuilder: (context, index) {
-                      return Card(
-                        margin: const EdgeInsets.only(bottom: 8),
-                        child: Padding(
-                          padding: const EdgeInsets.all(4.0),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: TextFormField(
-                                  initialValue: _ingredients[index],
-                                  onChanged: (value) => _updateIngredient(index, value),
-                                  decoration: InputDecoration(
-                                    hintText: 'Składnik ${index + 1}',
-                                    border: InputBorder.none,
-                                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                  ),
-                                ),
+                    const SizedBox(height: 8),
+                    TextButton.icon(
+                      onPressed: _addIngredient,
+                      icon: const Icon(Icons.add),
+                      label: const Text('Dodaj ręcznie'),
+                    )
+                  ],
+                ),
+              )
+                  : ListView.builder(
+                itemCount: _ingredients.length,
+                itemBuilder: (context, index) {
+                  final uniqueId = _ingredientIds[index];
+
+                  return Card(
+                    key: ValueKey(uniqueId),
+                    margin: const EdgeInsets.only(bottom: 8),
+                    child: Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              key: ValueKey('textfield_$uniqueId'),
+                              initialValue: _ingredients[index],
+                              onChanged: (value) => _updateIngredient(index, value),
+                              decoration: InputDecoration(
+                                hintText: 'Składnik ${index + 1}',
+                                border: InputBorder.none,
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                               ),
-                              IconButton(
-                                icon: const Icon(Icons.delete_outline, color: Colors.red),
-                                onPressed: () => _removeIngredient(index),
-                                tooltip: 'Usuń',
-                              ),
-                            ],
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                  ),
+                          IconButton(
+                            key: ValueKey('delete_$uniqueId'),
+                            icon: const Icon(Icons.delete_outline, color: Colors.red),
+                            onPressed: () => _removeIngredient(index),
+                            tooltip: 'Usuń',
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
             ),
 
             const SizedBox(height: 16),
