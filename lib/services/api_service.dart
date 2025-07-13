@@ -184,6 +184,36 @@ class ApiService {
     }
   }
 
+  static Future<Map<String, dynamic>> mapChemicalIdentities(List<String> ingredients) async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('auth_token');
+
+    if (token == null) {
+      throw Exception('Brak autentykacji');
+    }
+
+    try {
+      final response = await http.post(
+        Uri.parse('${Env.apiBaseUrl}/product/map-chemical-identities'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({
+          'ingredients': ingredients,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception('Failed to map chemical identities: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error mapping chemical identities: $e');
+    }
+  }
+
   static Future<Map<String, dynamic>> analyzeIngredients(Map<String, dynamic> ingredientsData) async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('auth_token');
