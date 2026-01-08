@@ -17,34 +17,82 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
   int _currentPageIndex = 0;
   bool _isLoading = false;
 
+  // Physiological
   int? _age;
   String? _gender;
   double? _weight;
   double? _height;
 
+  // Skin type
   String? _skinType;
   bool? _sensitiveSkin;
   bool? _atopicSkin;
   bool? _acneProne;
 
+  // Allergies
   bool? _hasAllergies;
   List<String> _cosmeticAllergies = [];
   List<String> _generalAllergies = [];
 
+  // Dermatological conditions (existing)
   bool? _acneVulgaris;
   bool? _psoriasis;
   bool? _eczema;
   bool? _rosacea;
 
-  bool? _photosensitizingDrugs;
-  bool? _diuretics;
+  // Additional skin conditions
+  bool? _barrierDysfunction;
+  bool? _seborrheicDermatitis;
+  bool? _periorbitalDermatitis;
+  bool? _contactDermatitis;
+  bool? _keratinizationDisorders;
+
+  // Medications (detailed)
+  List<String> _photosensitizingMedications = [];
+  List<String> _diureticMedications = [];
+  bool? _retinoidTherapy;
+  String? _corticosteroidUse;
+  List<String> _immunosuppressants = [];
+  String? _hormonalTherapy;
   String? _otherMedications;
   String? _medicalProcedures;
 
+  // Legacy (backward compatibility)
+  bool? _photosensitizingDrugs;
+  bool? _diuretics;
+
+  // Lifestyle
   String? _smoking;
   int? _stressLevel;
   String? _tanning;
   bool? _pregnancy;
+
+  // Cosmetic exposure patterns
+  String? _productUsageFrequency;
+  List<String> _typicalApplicationAreas = [];
+  double? _bodyBackgroundExposure;
+  List<String> _preferredProductTypes = [];
+
+  // Ingredient safety history
+  List<String> _knownIntolerances = [];
+  List<Map<String, dynamic>> _previousAdverseReactions = [];
+  List<String> _dermatologistRecommendedAvoid = [];
+
+  // User preferences
+  bool? _preferNatural;
+  bool? _veganOnly;
+  bool? _fragranceFree;
+  List<String> _avoidCategories = [];
+  List<String> _certificationPreferences = [];
+
+  // Environmental factors
+  String? _climateType;
+  String? _pollutionExposure;
+  String? _sunExposure;
+  String? _waterHardness;
+
+  // Cosmetic goals
+  List<String> _primaryConcerns = [];
 
   late TextEditingController _ageController;
   late TextEditingController _weightController;
@@ -57,7 +105,10 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
     'Schorzenia dermatologiczne',
     'Stosowane leki',
     'Inne leki i zabiegi',
-    'Styl życia, nawyki, inne'
+    'Styl życia, nawyki, inne',
+    'Ekspozycja na kosmetyki',
+    'Preferencje użytkownika',
+    'Środowisko i cele'
   ];
 
   @override
@@ -124,6 +175,9 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
                     _buildMedicationsForm(),
                     _buildOtherMedicationsForm(),
                     _buildLifestyleForm(),
+                    _buildCosmeticExposureForm(),
+                    _buildUserPreferencesForm(),
+                    _buildEnvironmentAndGoalsForm(),
                   ],
                 ),
               ),
@@ -209,20 +263,48 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
         atopicSkin: _atopicSkin,
         acneProne: _acneProne,
         hasAllergies: _hasAllergies,
-        cosmeticAllergies: _cosmeticAllergies,
-        generalAllergies: _generalAllergies,
+        cosmeticAllergies: _cosmeticAllergies.isEmpty ? null : _cosmeticAllergies,
+        generalAllergies: _generalAllergies.isEmpty ? null : _generalAllergies,
         acneVulgaris: _acneVulgaris,
         psoriasis: _psoriasis,
         eczema: _eczema,
         rosacea: _rosacea,
-        photosensitizingDrugs: _photosensitizingDrugs,
-        diuretics: _diuretics,
+        barrierDysfunction: _barrierDysfunction,
+        seborrheicDermatitis: _seborrheicDermatitis,
+        periorbitalDermatitis: _periorbitalDermatitis,
+        contactDermatitis: _contactDermatitis,
+        keratinizationDisorders: _keratinizationDisorders,
+        photosensitizingMedications: _photosensitizingMedications.isEmpty ? null : _photosensitizingMedications,
+        diureticMedications: _diureticMedications.isEmpty ? null : _diureticMedications,
+        retinoidTherapy: _retinoidTherapy,
+        corticosteroidUse: _corticosteroidUse,
+        immunosuppressants: _immunosuppressants.isEmpty ? null : _immunosuppressants,
+        hormonalTherapy: _hormonalTherapy,
         otherMedications: _otherMedications,
         medicalProcedures: _medicalProcedures,
+        photosensitizingDrugs: _photosensitizingDrugs,
+        diuretics: _diuretics,
         smoking: _smoking,
         stressLevel: _stressLevel,
         tanning: _tanning,
         pregnancy: _pregnancy,
+        productUsageFrequency: _productUsageFrequency,
+        typicalApplicationAreas: _typicalApplicationAreas.isEmpty ? null : _typicalApplicationAreas,
+        bodyBackgroundExposure: _bodyBackgroundExposure,
+        preferredProductTypes: _preferredProductTypes.isEmpty ? null : _preferredProductTypes,
+        knownIntolerances: _knownIntolerances.isEmpty ? null : _knownIntolerances,
+        previousAdverseReactions: _previousAdverseReactions.isEmpty ? null : _previousAdverseReactions,
+        dermatologistRecommendedAvoid: _dermatologistRecommendedAvoid.isEmpty ? null : _dermatologistRecommendedAvoid,
+        preferNatural: _preferNatural,
+        veganOnly: _veganOnly,
+        fragranceFree: _fragranceFree,
+        avoidCategories: _avoidCategories.isEmpty ? null : _avoidCategories,
+        certificationPreferences: _certificationPreferences.isEmpty ? null : _certificationPreferences,
+        climateType: _climateType,
+        pollutionExposure: _pollutionExposure,
+        sunExposure: _sunExposure,
+        waterHardness: _waterHardness,
+        primaryConcerns: _primaryConcerns.isEmpty ? null : _primaryConcerns,
       );
 
       await ApiService.updateUserProfile(profile);
@@ -443,6 +525,7 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
             ),
           ),
           const SizedBox(height: 16),
+          const Text('Właściwości skóry:', style: TextStyle(fontWeight: FontWeight.bold)),
           CheckboxListTile(
             title: const Text('Skóra wrażliwa/nadreaktywna'),
             value: _sensitiveSkin ?? false,
@@ -470,6 +553,24 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
               });
             },
           ),
+          CheckboxListTile(
+            title: const Text('Uszkodzona bariera skóry'),
+            value: _barrierDysfunction ?? false,
+            onChanged: (value) {
+              setState(() {
+                _barrierDysfunction = value;
+              });
+            },
+          ),
+          CheckboxListTile(
+            title: const Text('Łojotokowe zapalenie skóry'),
+            value: _seborrheicDermatitis ?? false,
+            onChanged: (value) {
+              setState(() {
+                _seborrheicDermatitis = value;
+              });
+            },
+          ),
         ],
       ),
     );
@@ -484,7 +585,7 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
           const Padding(
             padding: EdgeInsets.only(left: 16.0, bottom: 8.0, top: 8.0),
             child: Text(
-              'Alergie na składniki kosmetyków',  //TODO - Enhance allergies to list box
+              'Alergie na składniki kosmetyków',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
           ),
@@ -534,23 +635,76 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
             dense: true,
             contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
           ),
+          
+          const SizedBox(height: 16),
+          const Padding(
+            padding: EdgeInsets.only(left: 16.0, bottom: 8.0),
+            child: Text(
+              'Znane nietolerancje składników',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: TextFormField(
+              decoration: const InputDecoration(
+                labelText: 'Składniki powodujące reakcje',
+                hintText: 'Np. SLS, methylisothiazolinone, propylene glycol',
+                helperText: 'Oddziel przecinkiem',
+              ),
+              maxLines: 2,
+              onChanged: (value) {
+                if (value.isNotEmpty) {
+                  setState(() {
+                    _knownIntolerances = value.split(',')
+                        .map((e) => e.trim())
+                        .where((e) => e.isNotEmpty)
+                        .toList();
+                  });
+                }
+              },
+            ),
+          ),
+          
           const SizedBox(height: 8),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: TextFormField(
               decoration: const InputDecoration(
-                labelText: 'Inne alergie (oddziel przecinkiem)',
+                labelText: 'Inne alergie ogólne',
                 hintText: 'Np. nikiel, lateks, aloes',
+                helperText: 'Oddziel przecinkiem',
               ),
               onChanged: (value) {
                 if (value.isNotEmpty) {
-                  final List<String> others = value.split(',')
-                      .map((e) => e.trim())
-                      .where((e) => e.isNotEmpty)
-                      .toList();
-
                   setState(() {
-                    _generalAllergies = others;
+                    _generalAllergies = value.split(',')
+                        .map((e) => e.trim())
+                        .where((e) => e.isNotEmpty)
+                        .toList();
+                  });
+                }
+              },
+            ),
+          ),
+          
+          const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: TextFormField(
+              decoration: const InputDecoration(
+                labelText: 'Składniki zalecane do unikania przez dermatologa',
+                hintText: 'Np. retinoidy, kwasy AHA',
+                helperText: 'Oddziel przecinkiem',
+              ),
+              maxLines: 2,
+              onChanged: (value) {
+                if (value.isNotEmpty) {
+                  setState(() {
+                    _dermatologistRecommendedAvoid = value.split(',')
+                        .map((e) => e.trim())
+                        .where((e) => e.isNotEmpty)
+                        .toList();
                   });
                 }
               },
@@ -567,7 +721,8 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Występujące schorzenia:'),
+          const Text('Występujące schorzenia:', style: TextStyle(fontWeight: FontWeight.bold)),
+          const SizedBox(height: 8),
           CheckboxListTile(
             title: const Text('Trądzik pospolity'),
             value: _acneVulgaris ?? false,
@@ -604,6 +759,33 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
               });
             },
           ),
+          CheckboxListTile(
+            title: const Text('Zapalenie okolic oczu'),
+            value: _periorbitalDermatitis ?? false,
+            onChanged: (value) {
+              setState(() {
+                _periorbitalDermatitis = value;
+              });
+            },
+          ),
+          CheckboxListTile(
+            title: const Text('Kontaktowe zapalenie skóry'),
+            value: _contactDermatitis ?? false,
+            onChanged: (value) {
+              setState(() {
+                _contactDermatitis = value;
+              });
+            },
+          ),
+          CheckboxListTile(
+            title: const Text('Zaburzenia rogowacenia'),
+            value: _keratinizationDisorders ?? false,
+            onChanged: (value) {
+              setState(() {
+                _keratinizationDisorders = value;
+              });
+            },
+          ),
         ],
       ),
     );
@@ -615,24 +797,151 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Stosowane leki:'),
+          const Text('Stosowane leki:', style: TextStyle(fontWeight: FontWeight.bold)),
+          const SizedBox(height: 16),
+          
           CheckboxListTile(
-            title: const Text('Leki fotouczulające (np. tetracykliny)'),
-            value: _photosensitizingDrugs ?? false,
+            title: const Text('Terapia retinoidami'),
+            subtitle: const Text('Np. izotretynoina, tretynoina'),
+            value: _retinoidTherapy ?? false,
             onChanged: (value) {
               setState(() {
-                _photosensitizingDrugs = value;
+                _retinoidTherapy = value;
               });
             },
           ),
-          CheckboxListTile(
-            title: const Text('Leki moczopędne (np. hydrochlorotiazyd, furosemid)'),
-            value: _diuretics ?? false,
-            onChanged: (value) {
-              setState(() {
-                _diuretics = value;
-              });
-            },
+          
+          const SizedBox(height: 8),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.0),
+            child: Text('Kortykosteroidy:', style: TextStyle(fontWeight: FontWeight.bold)),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: DropdownButtonFormField<String>(
+              value: _corticosteroidUse,
+              items: const [
+                DropdownMenuItem(value: null, child: Text('Nie stosuję')),
+                DropdownMenuItem(value: 'topical', child: Text('Miejscowo (maści, kremy)')),
+                DropdownMenuItem(value: 'systemic', child: Text('Ogólnoustrojowo (tabletki)')),
+                DropdownMenuItem(value: 'both', child: Text('Oba rodzaje')),
+              ],
+              onChanged: (value) {
+                setState(() {
+                  _corticosteroidUse = value;
+                });
+              },
+              decoration: const InputDecoration(
+                hintText: 'Wybierz rodzaj terapii',
+              ),
+            ),
+          ),
+          
+          const SizedBox(height: 16),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.0),
+            child: Text('Terapia hormonalna:', style: TextStyle(fontWeight: FontWeight.bold)),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: DropdownButtonFormField<String>(
+              value: _hormonalTherapy,
+              items: const [
+                DropdownMenuItem(value: null, child: Text('Nie stosuję')),
+                DropdownMenuItem(value: 'birth_control', child: Text('Antykoncepcja hormonalna')),
+                DropdownMenuItem(value: 'hrt', child: Text('Hormonalna terapia zastępcza')),
+                DropdownMenuItem(value: 'other', child: Text('Inna terapia hormonalna')),
+              ],
+              onChanged: (value) {
+                setState(() {
+                  _hormonalTherapy = value;
+                });
+              },
+              decoration: const InputDecoration(
+                hintText: 'Wybierz rodzaj terapii',
+              ),
+            ),
+          ),
+          
+          const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: TextFormField(
+              decoration: const InputDecoration(
+                labelText: 'Leki fotouczulające',
+                hintText: 'Np. tetracykliny, fluorochinolony',
+                helperText: 'Oddziel przecinkiem',
+              ),
+              maxLines: 2,
+              onChanged: (value) {
+                if (value.isNotEmpty) {
+                  setState(() {
+                    _photosensitizingMedications = value.split(',')
+                        .map((e) => e.trim())
+                        .where((e) => e.isNotEmpty)
+                        .toList();
+                  });
+                } else {
+                  setState(() {
+                    _photosensitizingMedications = [];
+                  });
+                }
+              },
+            ),
+          ),
+          
+          const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: TextFormField(
+              decoration: const InputDecoration(
+                labelText: 'Leki moczopędne',
+                hintText: 'Np. hydrochlorotiazyd, furosemid',
+                helperText: 'Oddziel przecinkiem',
+              ),
+              maxLines: 2,
+              onChanged: (value) {
+                if (value.isNotEmpty) {
+                  setState(() {
+                    _diureticMedications = value.split(',')
+                        .map((e) => e.trim())
+                        .where((e) => e.isNotEmpty)
+                        .toList();
+                  });
+                } else {
+                  setState(() {
+                    _diureticMedications = [];
+                  });
+                }
+              },
+            ),
+          ),
+          
+          const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: TextFormField(
+              decoration: const InputDecoration(
+                labelText: 'Leki immunosupresyjne',
+                hintText: 'Np. metotreksat, cyklosporyna',
+                helperText: 'Oddziel przecinkiem',
+              ),
+              maxLines: 2,
+              onChanged: (value) {
+                if (value.isNotEmpty) {
+                  setState(() {
+                    _immunosuppressants = value.split(',')
+                        .map((e) => e.trim())
+                        .where((e) => e.isNotEmpty)
+                        .toList();
+                  });
+                } else {
+                  setState(() {
+                    _immunosuppressants = [];
+                  });
+                }
+              },
+            ),
           ),
         ],
       ),
@@ -754,6 +1063,408 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
         onChanged: onChanged,
       ),
       dense: true,
+    );
+  }
+
+  // Page 8: Cosmetic Exposure
+  Widget _buildCosmeticExposureForm() {
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('Częstotliwość używania kosmetyków:', style: TextStyle(fontWeight: FontWeight.bold)),
+          DropdownButtonFormField<String>(
+            value: _productUsageFrequency,
+            items: const [
+              DropdownMenuItem(value: 'daily', child: Text('Codziennie')),
+              DropdownMenuItem(value: 'weekly', child: Text('Kilka razy w tygodniu')),
+              DropdownMenuItem(value: 'occasionally', child: Text('Okazjonalnie')),
+            ],
+            onChanged: (value) {
+              setState(() {
+                _productUsageFrequency = value;
+              });
+            },
+            decoration: const InputDecoration(
+              hintText: 'Wybierz częstotliwość',
+            ),
+          ),
+          
+          const SizedBox(height: 16),
+          const Text('Typowe miejsca aplikacji kosmetyków:', style: TextStyle(fontWeight: FontWeight.bold)),
+          CheckboxListTile(
+            title: const Text('Twarz'),
+            value: _typicalApplicationAreas.contains('face'),
+            onChanged: (value) {
+              setState(() {
+                if (value == true) {
+                  _typicalApplicationAreas.add('face');
+                } else {
+                  _typicalApplicationAreas.remove('face');
+                }
+              });
+            },
+          ),
+          CheckboxListTile(
+            title: const Text('Ciało'),
+            value: _typicalApplicationAreas.contains('body'),
+            onChanged: (value) {
+              setState(() {
+                if (value == true) {
+                  _typicalApplicationAreas.add('body');
+                } else {
+                  _typicalApplicationAreas.remove('body');
+                }
+              });
+            },
+          ),
+          CheckboxListTile(
+            title: const Text('Dłonie'),
+            value: _typicalApplicationAreas.contains('hands'),
+            onChanged: (value) {
+              setState(() {
+                if (value == true) {
+                  _typicalApplicationAreas.add('hands');
+                } else {
+                  _typicalApplicationAreas.remove('hands');
+                }
+              });
+            },
+          ),
+          CheckboxListTile(
+            title: const Text('Szyja/dekolt'),
+            value: _typicalApplicationAreas.contains('neck'),
+            onChanged: (value) {
+              setState(() {
+                if (value == true) {
+                  _typicalApplicationAreas.add('neck');
+                } else {
+                  _typicalApplicationAreas.remove('neck');
+                }
+              });
+            },
+          ),
+          
+          const SizedBox(height: 16),
+          const Text('Preferowane typy produktów:', style: TextStyle(fontWeight: FontWeight.bold)),
+          CheckboxListTile(
+            title: const Text('Produkty pozostawiające (kremy, serum)'),
+            value: _preferredProductTypes.contains('leave-on'),
+            onChanged: (value) {
+              setState(() {
+                if (value == true) {
+                  _preferredProductTypes.add('leave-on');
+                } else {
+                  _preferredProductTypes.remove('leave-on');
+                }
+              });
+            },
+          ),
+          CheckboxListTile(
+            title: const Text('Produkty zmywalne (żele, szampony)'),
+            value: _preferredProductTypes.contains('rinse-off'),
+            onChanged: (value) {
+              setState(() {
+                if (value == true) {
+                  _preferredProductTypes.add('rinse-off');
+                } else {
+                  _preferredProductTypes.remove('rinse-off');
+                }
+              });
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Page 9: User Preferences
+  Widget _buildUserPreferencesForm() {
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('Preferencje składników:', style: TextStyle(fontWeight: FontWeight.bold)),
+          CheckboxListTile(
+            title: const Text('Preferuję naturalne składniki'),
+            value: _preferNatural ?? false,
+            onChanged: (value) {
+              setState(() {
+                _preferNatural = value;
+              });
+            },
+          ),
+          CheckboxListTile(
+            title: const Text('Tylko produkty wegańskie'),
+            value: _veganOnly ?? false,
+            onChanged: (value) {
+              setState(() {
+                _veganOnly = value;
+              });
+            },
+          ),
+          CheckboxListTile(
+            title: const Text('Bez substancji zapachowych'),
+            value: _fragranceFree ?? false,
+            onChanged: (value) {
+              setState(() {
+                _fragranceFree = value;
+              });
+            },
+          ),
+          
+          const SizedBox(height: 16),
+          const Text('Kategorie do unikania:', style: TextStyle(fontWeight: FontWeight.bold)),
+          CheckboxListTile(
+            title: const Text('Parabeny'),
+            value: _avoidCategories.contains('parabens'),
+            onChanged: (value) {
+              setState(() {
+                if (value == true) {
+                  _avoidCategories.add('parabens');
+                } else {
+                  _avoidCategories.remove('parabens');
+                }
+              });
+            },
+          ),
+          CheckboxListTile(
+            title: const Text('Siarczany (SLS/SLES)'),
+            value: _avoidCategories.contains('sulfates'),
+            onChanged: (value) {
+              setState(() {
+                if (value == true) {
+                  _avoidCategories.add('sulfates');
+                } else {
+                  _avoidCategories.remove('sulfates');
+                }
+              });
+            },
+          ),
+          CheckboxListTile(
+            title: const Text('Silikony'),
+            value: _avoidCategories.contains('silicones'),
+            onChanged: (value) {
+              setState(() {
+                if (value == true) {
+                  _avoidCategories.add('silicones');
+                } else {
+                  _avoidCategories.remove('silicones');
+                }
+              });
+            },
+          ),
+          CheckboxListTile(
+            title: const Text('Olej mineralny'),
+            value: _avoidCategories.contains('mineral_oil'),
+            onChanged: (value) {
+              setState(() {
+                if (value == true) {
+                  _avoidCategories.add('mineral_oil');
+                } else {
+                  _avoidCategories.remove('mineral_oil');
+                }
+              });
+            },
+          ),
+          
+          const SizedBox(height: 16),
+          const Text('Preferowane certyfikaty:', style: TextStyle(fontWeight: FontWeight.bold)),
+          CheckboxListTile(
+            title: const Text('Ecocert'),
+            value: _certificationPreferences.contains('ecocert'),
+            onChanged: (value) {
+              setState(() {
+                if (value == true) {
+                  _certificationPreferences.add('ecocert');
+                } else {
+                  _certificationPreferences.remove('ecocert');
+                }
+              });
+            },
+          ),
+          CheckboxListTile(
+            title: const Text('Cosmos'),
+            value: _certificationPreferences.contains('cosmos'),
+            onChanged: (value) {
+              setState(() {
+                if (value == true) {
+                  _certificationPreferences.add('cosmos');
+                } else {
+                  _certificationPreferences.remove('cosmos');
+                }
+              });
+            },
+          ),
+          CheckboxListTile(
+            title: const Text('Natrue'),
+            value: _certificationPreferences.contains('natrue'),
+            onChanged: (value) {
+              setState(() {
+                if (value == true) {
+                  _certificationPreferences.add('natrue');
+                } else {
+                  _certificationPreferences.remove('natrue');
+                }
+              });
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Page 10: Environment and Goals
+  Widget _buildEnvironmentAndGoalsForm() {
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('Typ klimatu:', style: TextStyle(fontWeight: FontWeight.bold)),
+          DropdownButtonFormField<String>(
+            value: _climateType,
+            items: const [
+              DropdownMenuItem(value: 'dry', child: Text('Suchy')),
+              DropdownMenuItem(value: 'humid', child: Text('Wilgotny')),
+              DropdownMenuItem(value: 'temperate', child: Text('Umiarkowany')),
+              DropdownMenuItem(value: 'cold', child: Text('Zimny')),
+            ],
+            onChanged: (value) {
+              setState(() {
+                _climateType = value;
+              });
+            },
+            decoration: const InputDecoration(
+              hintText: 'Wybierz typ klimatu',
+            ),
+          ),
+          
+          const SizedBox(height: 16),
+          const Text('Ekspozycja na zanieczyszczenia:', style: TextStyle(fontWeight: FontWeight.bold)),
+          DropdownButtonFormField<String>(
+            value: _pollutionExposure,
+            items: const [
+              DropdownMenuItem(value: 'high', child: Text('Wysoka (duże miasto)')),
+              DropdownMenuItem(value: 'moderate', child: Text('Umiarkowana')),
+              DropdownMenuItem(value: 'low', child: Text('Niska (tereny wiejskie)')),
+            ],
+            onChanged: (value) {
+              setState(() {
+                _pollutionExposure = value;
+              });
+            },
+            decoration: const InputDecoration(
+              hintText: 'Wybierz poziom',
+            ),
+          ),
+          
+          const SizedBox(height: 16),
+          const Text('Ekspozycja na słońce:', style: TextStyle(fontWeight: FontWeight.bold)),
+          DropdownButtonFormField<String>(
+            value: _sunExposure,
+            items: const [
+              DropdownMenuItem(value: 'high_outdoor', child: Text('Wysoka (praca na zewnątrz)')),
+              DropdownMenuItem(value: 'moderate', child: Text('Umiarkowana')),
+              DropdownMenuItem(value: 'minimal_indoor', child: Text('Minimalna (praca w pomieszczeniach)')),
+            ],
+            onChanged: (value) {
+              setState(() {
+                _sunExposure = value;
+              });
+            },
+            decoration: const InputDecoration(
+              hintText: 'Wybierz poziom',
+            ),
+          ),
+          
+          const SizedBox(height: 16),
+          const Text('Twardość wody:', style: TextStyle(fontWeight: FontWeight.bold)),
+          DropdownButtonFormField<String>(
+            value: _waterHardness,
+            items: const [
+              DropdownMenuItem(value: 'hard', child: Text('Twarda')),
+              DropdownMenuItem(value: 'soft', child: Text('Miękka')),
+              DropdownMenuItem(value: 'moderate', child: Text('Średnia')),
+            ],
+            onChanged: (value) {
+              setState(() {
+                _waterHardness = value;
+              });
+            },
+            decoration: const InputDecoration(
+              hintText: 'Wybierz twardość wody',
+            ),
+          ),
+          
+          const SizedBox(height: 16),
+          const Text('Główne problemy kosmetyczne:', style: TextStyle(fontWeight: FontWeight.bold)),
+          CheckboxListTile(
+            title: const Text('Anti-aging'),
+            value: _primaryConcerns.contains('anti_aging'),
+            onChanged: (value) {
+              setState(() {
+                if (value == true) {
+                  _primaryConcerns.add('anti_aging');
+                } else {
+                  _primaryConcerns.remove('anti_aging');
+                }
+              });
+            },
+          ),
+          CheckboxListTile(
+            title: const Text('Trądzik'),
+            value: _primaryConcerns.contains('acne'),
+            onChanged: (value) {
+              setState(() {
+                if (value == true) {
+                  _primaryConcerns.add('acne');
+                } else {
+                  _primaryConcerns.remove('acne');
+                }
+              });
+            },
+          ),
+          CheckboxListTile(
+            title: const Text('Nawilżenie'),
+            value: _primaryConcerns.contains('hydration'),
+            onChanged: (value) {
+              setState(() {
+                if (value == true) {
+                  _primaryConcerns.add('hydration');
+                } else {
+                  _primaryConcerns.remove('hydration');
+                }
+              });
+            },
+          ),
+          CheckboxListTile(
+            title: const Text('Rozjaśnianie/wyrównanie kolorytu'),
+            value: _primaryConcerns.contains('brightening'),
+            onChanged: (value) {
+              setState(() {
+                if (value == true) {
+                  _primaryConcerns.add('brightening');
+                } else {
+                  _primaryConcerns.remove('brightening');
+                }
+              });
+            },
+          ),
+          CheckboxListTile(
+            title: const Text('Ochrona przeciwsłoneczna'),
+            value: _primaryConcerns.contains('sun_protection'),
+            onChanged: (value) {
+              setState(() {
+                if (value == true) {
+                  _primaryConcerns.add('sun_protection');
+                } else {
+                  _primaryConcerns.remove('sun_protection');
+                }
+              });
+            },
+          ),
+        ],
+      ),
     );
   }
 }
