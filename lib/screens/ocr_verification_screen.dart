@@ -82,16 +82,15 @@ class _OcrVerificationScreenState extends State<OcrVerificationScreen> {
     });
 
     try {
-      final mappingResult = await ApiService.mapChemicalIdentities(confirmedIngredients);
+      final apiResponse = await ApiService.mapChemicalIdentities(confirmedIngredients);
+      
+      // API returns: { "mapping": {...}, "decision": {...} }
+      // Pass full response to analysis screen
 
       Navigator.pushReplacementNamed(
           context,
           '/analysis-result',
-          arguments: {
-            'chemical_mapping': mappingResult,
-            'ingredients': confirmedIngredients,
-            'file_id': _fileId,
-          }
+          arguments: apiResponse,  // Pass entire response (contains 'decision' key)
       );
     } catch (e) {
       Fluttertoast.showToast(msg: 'Błąd podczas analizy: ${e.toString()}');
